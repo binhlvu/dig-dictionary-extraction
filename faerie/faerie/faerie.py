@@ -19,8 +19,7 @@ def readDict(dictfile, config):
     n = config["token_size"]
 
     i = 0
-    for line in open(dictfile):
-        line = json.loads(line)
+    for line in dictfile:
         entity_realid[i] = line[config["dictionary"]["id_attribute"]]
         entity_real[i] = line[dictfileds[0]]
         for filed in dictfileds[1:]:
@@ -148,8 +147,12 @@ def readDictlist(dictlist, n):
 
 
 def run(dictfile, inputfile, configfile):
-    config = json.loads(open(configfile).read())
-    dicts = readDict(dictfile, config)
+    with open(configfile, 'rb') as f:
+        config = json.loads(f.read())
+
+    with open(dictfile, 'rb') as f:
+        dicts = readDict([json.loads(line) for line in f], config)
+
     for line in open(inputfile):
         line = json.loads(line)
         print json.dumps(processDoc(line, dicts, config))
